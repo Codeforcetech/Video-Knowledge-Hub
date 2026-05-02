@@ -1,26 +1,41 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --vkh-bg: #0b0b0b;
+  --vkh-bg-2: #111111;
+  --vkh-card: #181818;
+  --vkh-text: #ffffff;
+  --vkh-subtext: #a1a1aa;
+  --vkh-border: #2a2a2a;
+  --vkh-accent: #3b82f6;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-background: var(--vkh-bg);
+  --color-foreground: var(--vkh-text);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--vkh-bg);
+  color: var(--vkh-text);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica,
+    Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+* {
+  border-color: var(--vkh-border);
+}
+
+/* 代表ローディングオーバーレイのフェードイン */
+@keyframes vkh-rep-load-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.vkh-rep-load-overlay {
+  animation: vkh-rep-load-fade 0.28s ease-out forwards;
 }

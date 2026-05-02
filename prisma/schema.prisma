@@ -1,0 +1,141 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum ReactionType {
+  GOOD
+  BAD
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String?
+  email        String   @unique
+  passwordHash String
+  role         UserRole @default(USER)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  registeredVideos Video[] @relation("VideoRegisteredBy")
+  producedVideos   Video[] @relation("VideoProducedBy")
+  comments         Comment[]
+  reactions        VideoReaction[]
+}
+
+model Video {
+  id            String   @id @default(cuid())
+  url           String   @unique
+  memo          String?
+  thumbnailUrl  String?
+  isInHouse     Boolean  @default(false)
+  producedAt    DateTime?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // 登録者（必須）
+  registeredById String
+  registeredBy   User   @relation("VideoRegisteredBy", fields: [registeredById], references: [id], onDelete: Restrict)
+
+  // 制作者（自社制作ON時のみ運用上必須。DBはNULL許容）
+  producedById   String?
+  producedBy     User?  @relation("VideoProducedBy", fields: [producedById], references: [id], onDelete: SetNull)
+
+  tags       VideoTag[]
+  comments   Comment[]
+  reactions  VideoReaction[]
+
+  @@index([createdAt])
+  @@index([producedAt])
+  @@index([registeredById])
+  @@index([producedById])
+}
+
+model TagCategory {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items TagItem[]
+
+  @@index([sortOrder])
+}
+
+model TagItem {
+  id         String   @id @default(cuid())
+  categoryId String
+  name       String
+  sortOrder  Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  category TagCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  videos   VideoTag[]
+
+  @@unique([categoryId, name])
+  @@index([categoryId, sortOrder])
+}
+
+model VideoTag {
+  videoId   String
+  tagItemId String
+  createdAt DateTime @default(now())
+
+  video   Video   @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  tagItem TagItem @relation(fields: [tagItemId], references: [id], onDelete: Cascade)
+
+  @@id([videoId, tagItemId])
+  @@index([tagItemId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  videoId   String
+  userId    String
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([videoId, createdAt])
+}
+
+model VideoReaction {
+  id        String        @id @default(cuid())
+  videoId   String
+  userId    String
+  type      ReactionType
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // 1ユーザー1つ（GOOD/BAD 切替）
+  @@unique([videoId, userId])
+  @@index([videoId, type])
+}

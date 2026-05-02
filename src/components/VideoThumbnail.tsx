@@ -35,7 +35,7 @@ export function VideoThumbnail({
       <img
         src={url}
         alt={alt}
-        className="h-full w-full object-cover transition duration-500 ease-out group-hover:scale-[1.04]"
+        className="h-full w-full max-w-full object-cover transition duration-500 ease-out group-hover:scale-[1.04]"
         loading="lazy"
       />
     </div>

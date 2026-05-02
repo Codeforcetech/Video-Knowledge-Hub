@@ -39,30 +39,30 @@ export function VideoCard({ video: v, variant }: Props) {
   return (
     <article
       className={[
-        "group overflow-hidden rounded-2xl border border-[#2A2A2A] bg-[#181818]",
+        "group max-w-full overflow-hidden rounded-2xl border border-[#2A2A2A] bg-[#181818]",
         "transition-all duration-300 ease-out will-change-transform",
         "hover:-translate-y-1 hover:border-white/[0.14] hover:shadow-[0_24px_56px_rgba(0,0,0,0.55)]",
-        isTimeline ? "flex flex-col" : "flex flex-col md:flex-row md:items-stretch",
+        isTimeline ? "flex flex-col" : "flex min-w-0 flex-col md:flex-row md:items-stretch",
       ].join(" ")}
     >
       <div
         className={
           isTimeline
-            ? "relative"
-            : "relative shrink-0 md:w-[min(38%,300px)] md:self-stretch"
+            ? "relative min-w-0"
+            : "relative w-full min-w-0 md:shrink-0 md:w-[min(38%,300px)] md:self-stretch"
         }
       >
         <Link
           href={`/videos/${v.id}`}
           className={[
-            "block focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#3B82F6]/40",
+            "block w-full min-w-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#3B82F6]/40",
             !isTimeline
-              ? "md:relative md:block md:h-full md:min-h-[200px]"
+              ? "md:relative md:h-full md:min-h-[200px]"
               : "",
           ].join(" ")}
         >
           {!isTimeline ? (
-            <span className="md:absolute md:inset-0 md:block">
+            <span className="block w-full min-w-0 md:absolute md:inset-0">
               <VideoThumbnail
                 src={v.thumbnailUrl}
                 alt=""
@@ -91,7 +91,7 @@ export function VideoCard({ video: v, variant }: Props) {
           href={`/videos/${v.id}`}
           className="block min-w-0 space-y-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3B82F6]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]"
         >
-          <p className="line-clamp-2 text-sm font-medium text-[#60A5FA] transition group-hover:text-[#93C5FD]">
+          <p className="line-clamp-2 break-all text-sm font-medium text-[#60A5FA] transition group-hover:text-[#93C5FD]">
             {v.url}
           </p>
           <p className="text-xs text-[#3B82F6]/85 transition group-hover:text-[#60A5FA]">
